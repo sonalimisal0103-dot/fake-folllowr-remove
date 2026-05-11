@@ -4,33 +4,43 @@ import random
 import sys
 import os
 
-print("🔥 Instagram Fake Followers Remover Tool")
+print("🔥 Instagram Login Tool - Email / Username Support")
 
-# Clean Username (extra dot hataya)
-USERNAME = "lagxd71@gmail.com".strip()   # Extra space ya dot hatane ke liye
-PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
+# Yahan email ya username daal sakte ho
+LOGIN_ID = "theharsh_.01"   # Ya email bhi daal sakte ho jaise "example@gmail.com"
+PASSWORD = "HARSHAD00"               # Password daal do
 
-# Old session delete
-if os.path.exists("session.json"):
-    os.remove("session.json")
+# Proxy (optional)
+PROXY = "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088"
 
-cl = Client()
+def try_login(login_id, password):
+    for attempt in range(1, 6):
+        print(f"\n🔄 Login Attempt {attempt}/5")
 
-try:
-    print(f"Trying login with clean username: @{USERNAME}")
-    cl.login(USERNAME, PASSWORD)
-    print("✅ Login Successful!")
-    cl.dump_settings("session.json")
-except Exception as e:
-    print(f"❌ Login Failed: {e}")
-    print("\nAb ye kar:")
-    print("1. Mobile data on kar")
-    print("2. Instagram app se login kar")
-    print("3. 30 minute activity kar")
-    print("4. Phir tool try kar")
+        if os.path.exists("session.json"):
+            os.remove("session.json")
+
+        cl = Client()
+        if PROXY:
+            cl.set_proxy(PROXY)
+            print(f"🌐 Proxy use ho raha hai")
+
+        try:
+            cl.login(login_id, password)
+            cl.dump_settings("session.json")
+            print("✅ Login Successful!")
+            return cl
+        except Exception as e:
+            print(f"❌ Attempt {attempt} Failed: {e}")
+            time.sleep(random.randint(8, 20))
+
+    print("❌ All attempts failed.")
     sys.exit()
 
-print(f"\nFetching followers of @{USERNAME}...")
+# ==================== LOGIN ====================
+cl = try_login(LOGIN_ID, PASSWORD)
+
+print(f"\nFetching followers of @{LOGIN_ID}...")
 
 followers = cl.user_followers(cl.user_id, amount=0)
 print(f"Total Followers: {len(followers)}")
