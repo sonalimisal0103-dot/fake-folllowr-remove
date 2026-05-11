@@ -4,10 +4,11 @@ import random
 import sys
 import os
 
-print("🔥 Instagram Tool - Fixed Username")
+print("🔥 Instagram Fake Followers Remover Tool")
 
-USERNAME = "theharsh_.01"   # ← Exact username yahan daal
-PASSWORD = "HARSHAD00"               # ← Password daal
+# Exact Username (extra dot nahi hai)
+USERNAME = "theharsh_.01"
+PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
 
 # Old session delete
 if os.path.exists("session.json"):
@@ -16,16 +17,16 @@ if os.path.exists("session.json"):
 cl = Client()
 
 try:
-    print("Trying login...")
+    print(f"Trying login with @{USERNAME}...")
     cl.login(USERNAME, PASSWORD)
     print("✅ Login Successful!")
     cl.dump_settings("session.json")
 except Exception as e:
     print(f"❌ Login Failed: {e}")
-    print("\nAgar phir bhi nahi ho raha to:")
+    print("\nSuggestions:")
     print("1. Mobile data pe Instagram app se login kar")
-    print("2. 30 minute normal activity kar")
-    print("3. Phir tool try kar")
+    print("2. 2FA on hai to code daal")
+    print("3. 1 ghanta wait kar ke phir try kar")
     sys.exit()
 
 print(f"\nFetching followers of @{USERNAME}...")
@@ -54,6 +55,7 @@ max_limit = 25
 
 for username in fake_list:
     if unfollowed >= max_limit:
+        print("Daily safe limit reached.")
         break
     try:
         uid = cl.user_id_from_username(username)
