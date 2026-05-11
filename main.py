@@ -1,76 +1,74 @@
 from instagrapi import Client
-import json
+import time
+import random
 import sys
 
-print("🔥 Instagram Fake Followers Remover Tool")
+print("🔥 Instagram Fake Followers Auto Unfollow Tool")
 
 USERNAME = "theharsh_.01"
-PASSWORD = "HARSHAD00"                    # ← Yahan apna password daal do
+PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
 
 # Proxy set kiya hai
 PROXY = "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088"
 
-if not PASSWORD:
-    print("❌ Password daal do code mein!")
-    sys.exit()
-
 cl = Client()
-cl.set_proxy(PROXY)
-print(f"🌐 Proxy Connected: p101.squidproxies.com:9088")
+
+if PROXY:
+    cl.set_proxy(PROXY)
+    print(f"🌐 Proxy Connected: p101.squidproxies.com:9088")
 
 try:
     cl.login(USERNAME, PASSWORD)
     print("✅ Login Successful!")
 except Exception as e:
     print(f"❌ Login Failed: {e}")
-    print("\nTips:")
-    print("1. Password sahi hai ya nahi check kar")
-    print("2. 2FA enabled hai to code bhi daalna padega")
-    print("3. Agar phir bhi nahi ho raha to proxy change karo")
+    print("Proxy change karo ya mobile data use karo")
     sys.exit()
 
-print(f"\nFetching followers of @{USERNAME}...")
+user_id = cl.user_id_from_username(USERNAME)
+print(f"Fetching followers of @{USERNAME}...")
 
-followers = cl.user_followers(cl.user_id, amount=0)
+followers = cl.user_followers(user_id, amount=0)
 print(f"Total Followers: {len(followers)}")
 
 fake_list = []
 
 for uid, user in followers.items():
     score = 0
-    reasons = []
-
     if not user.profile_pic_url or "default" in str(user.profile_pic_url):
+        score += 4
+    if user.follower_count < 25 and user.following_count > 150:
         score += 3
-        reasons.append("No DP")
-
-    if user.follower_count < 20 and user.following_count > 100:
-        score += 2
-        reasons.append("Ghost")
-
     if user.media_count == 0:
-        score += 2
-        reasons.append("No Posts")
+        score += 3
 
-    if score >= 4:
-        fake_list.append({
-            "username": user.username,
-            "score": score,
-            "reasons": reasons,
-            "followers": user.follower_count,
-            "following": user.following_count
-        })
+    if score >= 6:
+        fake_list.append(user.username)
 
-print("\n" + "="*55)
-print(f"🚨 FAKE ACCOUNTS FOUND: {len(fake_list)}")
-print("="*55)
+print(f"Found {len(fake_list)} fake accounts")
 
-for acc in sorted(fake_list, key=lambda x: x , reverse=True)[:40]:
-    print(f"@{acc :20} | Score: {acc } | Followers: {acc }")
+# Slow Unfollow
+print("\nStarting slow unfollow...")
 
-# Save results
-with open("fake_followers.json", "w", encoding="utf-8") as f:
-    json.dump(fake_list, f, indent=4, ensure_ascii=False)
+unfollowed = 0
+max_limit = 25   # Safe limit
 
-print(f"\n✅ Results saved in 'fake_followers.json'")
-print("Ab Instagram pe jaake manually unfollow kar sakte ho.")
+for username in fake_list:
+    if unfollowed >= max_limit:
+        print("Daily limit reached.")
+        break
+
+    try:
+        uid = cl.user_id_from_username(username)
+        cl.user_unfollow(uid)
+        unfollowed += 1
+        print(f"✅ Unfollowed @{username} ({unfollowed}/{max_limit})")
+
+        delay = random.uniform(40, 65)
+        time.sleep(delay)
+
+    except Exception as e:
+        print(f"Error on @{username}: {e}")
+        time.sleep(25)
+
+print(f"\n🎉 Done! Total unfollowed: {unfollowed}")
