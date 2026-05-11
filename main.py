@@ -1,29 +1,37 @@
 from instagrapi import Client
-import time
 import json
 import sys
-from datetime import datetime
 
 print("🔥 Instagram Fake Followers Remover Tool")
 
-# ==================== CONFIG ====================
-USERNAME = "theharsh_.01"          # ← Yahan apna username daal do
-PASSWORD = "HARSHAD00"                      # ← Yahan apna password daal do
+USERNAME = "theharsh_.01"
+PASSWORD = "HARSHAD00"                    # ← Yahan apna password daal do
+
+# Proxy set kiya hai
+PROXY = "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088"
 
 if not PASSWORD:
-    print("❌ Password nahi diya! Code mein PASSWORD daal ke phir run karo.")
+    print("❌ Password daal do code mein!")
     sys.exit()
 
 cl = Client()
-cl.login(USERNAME, PASSWORD)
-print("✅ Login Successful!")
+cl.set_proxy(PROXY)
+print(f"🌐 Proxy Connected: p101.squidproxies.com:9088")
 
-user_id = cl.user_id_from_username(USERNAME)
-print(f"Your Account: @{USERNAME}")
+try:
+    cl.login(USERNAME, PASSWORD)
+    print("✅ Login Successful!")
+except Exception as e:
+    print(f"❌ Login Failed: {e}")
+    print("\nTips:")
+    print("1. Password sahi hai ya nahi check kar")
+    print("2. 2FA enabled hai to code bhi daalna padega")
+    print("3. Agar phir bhi nahi ho raha to proxy change karo")
+    sys.exit()
 
-print("Fetching all followers... (thoda time lagega)")
-followers = cl.user_followers(user_id, amount=0)
+print(f"\nFetching followers of @{USERNAME}...")
 
+followers = cl.user_followers(cl.user_id, amount=0)
 print(f"Total Followers: {len(followers)}")
 
 fake_list = []
@@ -34,11 +42,11 @@ for uid, user in followers.items():
 
     if not user.profile_pic_url or "default" in str(user.profile_pic_url):
         score += 3
-        reasons.append("No Profile Pic")
+        reasons.append("No DP")
 
     if user.follower_count < 20 and user.following_count > 100:
         score += 2
-        reasons.append("Low Followers, High Following")
+        reasons.append("Ghost")
 
     if user.media_count == 0:
         score += 2
@@ -53,19 +61,16 @@ for uid, user in followers.items():
             "following": user.following_count
         })
 
-# Results
-print("\n" + "="*60)
+print("\n" + "="*55)
 print(f"🚨 FAKE ACCOUNTS FOUND: {len(fake_list)}")
-print("="*60)
+print("="*55)
 
-for acc in fake_list[:50]:
-    print(f"@{acc['username']} | Score: {acc['score']} | Followers: {acc['followers']} | Reasons: {', '.join(acc['reasons'])}")
+for acc in sorted(fake_list, key=lambda x: x , reverse=True)[:40]:
+    print(f"@{acc :20} | Score: {acc } | Followers: {acc }")
 
-# Save File
+# Save results
 with open("fake_followers.json", "w", encoding="utf-8") as f:
     json.dump(fake_list, f, indent=4, ensure_ascii=False)
 
 print(f"\n✅ Results saved in 'fake_followers.json'")
 print("Ab Instagram pe jaake manually unfollow kar sakte ho.")
-
-input("\nPress Enter to exit...")
