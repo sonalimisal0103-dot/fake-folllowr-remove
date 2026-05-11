@@ -7,7 +7,7 @@ import os
 print("🔥 Instagram Fake Followers Remover Tool")
 
 # Clean Username (extra dot hataya)
-USERNAME = "theharsh_.01".strip()   # Extra space ya dot hatane ke liye
+USERNAME = "lagxd71@gmail.com".strip()   # Extra space ya dot hatane ke liye
 PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
 
 # Old session delete
