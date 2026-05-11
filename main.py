@@ -6,8 +6,8 @@ import os
 
 print("🔥 Instagram Fake Followers Remover Tool")
 
-# Exact Username (extra dot nahi hai)
-USERNAME = "theharsh_.01"
+# Clean Username (extra dot hataya)
+USERNAME = "theharsh_.01".strip()   # Extra space ya dot hatane ke liye
 PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
 
 # Old session delete
@@ -17,16 +17,17 @@ if os.path.exists("session.json"):
 cl = Client()
 
 try:
-    print(f"Trying login with @{USERNAME}...")
+    print(f"Trying login with clean username: @{USERNAME}")
     cl.login(USERNAME, PASSWORD)
     print("✅ Login Successful!")
     cl.dump_settings("session.json")
 except Exception as e:
     print(f"❌ Login Failed: {e}")
-    print("\nSuggestions:")
-    print("1. Mobile data pe Instagram app se login kar")
-    print("2. 2FA on hai to code daal")
-    print("3. 1 ghanta wait kar ke phir try kar")
+    print("\nAb ye kar:")
+    print("1. Mobile data on kar")
+    print("2. Instagram app se login kar")
+    print("3. 30 minute activity kar")
+    print("4. Phir tool try kar")
     sys.exit()
 
 print(f"\nFetching followers of @{USERNAME}...")
