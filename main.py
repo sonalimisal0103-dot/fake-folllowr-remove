@@ -4,42 +4,29 @@ import random
 import sys
 import os
 
-print("🔥 Instagram Fake Followers Remover Tool - Unlimited Login Try")
+print("🔥 Instagram Tool - Fixed Username")
 
-USERNAME = "theharsh_.01"
-PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
+USERNAME = "theharsh_.01"   # ← Exact username yahan daal
+PASSWORD = "HARSHAD00"               # ← Password daal
 
-def unlimited_login():
-    attempt = 0
-    while True:
-        attempt += 1
-        print(f"\n🔄 Login Attempt #{attempt}")
+# Old session delete
+if os.path.exists("session.json"):
+    os.remove("session.json")
 
-        # Purani session delete
-        if os.path.exists("session.json"):
-            os.remove("session.json")
+cl = Client()
 
-        cl = Client()
-
-        try:
-            cl.login(USERNAME, PASSWORD)
-            cl.dump_settings("session.json")
-            print("✅ Login Successful!")
-            return cl
-        except Exception as e:
-            print(f"❌ Attempt #{attempt} Failed: {e}")
-
-            # Random safe delay
-            wait = random.randint(15, 40)
-            print(f"   Waiting {wait} seconds before next try...")
-            time.sleep(wait)
-
-            if attempt % 10 == 0:
-                print("   10 attempts ho gaye... Thoda break le raha hoon (1 minute)")
-                time.sleep(60)
-
-# ==================== UNLIMITED LOGIN ====================
-cl = unlimited_login()
+try:
+    print("Trying login...")
+    cl.login(USERNAME, PASSWORD)
+    print("✅ Login Successful!")
+    cl.dump_settings("session.json")
+except Exception as e:
+    print(f"❌ Login Failed: {e}")
+    print("\nAgar phir bhi nahi ho raha to:")
+    print("1. Mobile data pe Instagram app se login kar")
+    print("2. 30 minute normal activity kar")
+    print("3. Phir tool try kar")
+    sys.exit()
 
 print(f"\nFetching followers of @{USERNAME}...")
 
@@ -62,13 +49,11 @@ for uid, user in followers.items():
 
 print(f"\n🚨 Found {len(fake_list)} fake accounts")
 
-# Slow Unfollow
 unfollowed = 0
 max_limit = 25
 
 for username in fake_list:
     if unfollowed >= max_limit:
-        print("Daily safe limit reached.")
         break
     try:
         uid = cl.user_id_from_username(username)
