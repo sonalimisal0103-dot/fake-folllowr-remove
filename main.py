@@ -5,7 +5,7 @@ import sys
 
 print("🔥 Instagram Fake Followers Remover Tool + Proxy System")
 
-USERNAME = "theharsh_.01"
+USERNAME = "lagxd71@gmail.com"
 PASSWORD = "HARSHAD00"   # ← Yahan password daal do
 
 # ==================== PROXIES ====================
