@@ -2,28 +2,46 @@ from instagrapi import Client
 import time
 import random
 import sys
+import os
 
-print("🔥 Instagram Fake Followers Auto Unfollow Tool")
+print("🔥 Instagram Fake Followers Remover Tool (Improved Login)")
 
 USERNAME = "theharsh_.01"
-PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
+PASSWORD = "HARSHAD00"   # ← Yahan password daal do
 
-# Proxy set kiya hai
-PROXY = "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088"
+proxies = [
+    "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088",
+    # Agar aur proxies hain to yahan add kar sakte ho
+]
 
-cl = Client()
+def login_with_retry():
+    for attempt in range(3):
+        proxy = random.choice(proxies) if proxies else None
+        cl = Client()
+        
+        if proxy:
+            cl.set_proxy(proxy)
+            print(f"🌐 Attempt {attempt+1} | Proxy: {proxy[:30]}...")
 
-if PROXY:
-    cl.set_proxy(PROXY)
-    print(f"🌐 Proxy Connected: p101.squidproxies.com:9088")
+        try:
+            # Session forget karne ke liye
+            if os.path.exists("session.json"):
+                os.remove("session.json")
+            
+            cl.login(USERNAME, PASSWORD)
+            cl.dump_settings("session.json")   # session save kar diya
+            print("✅ Login Successful!")
+            return cl
+            
+        except Exception as e:
+            print(f"❌ Attempt {attempt+1} Failed: {e}")
+            time.sleep(10)
 
-try:
-    cl.login(USERNAME, PASSWORD)
-    print("✅ Login Successful!")
-except Exception as e:
-    print(f"❌ Login Failed: {e}")
-    print("Proxy change karo ya mobile data use karo")
+    print("❌ All attempts failed. Proxy change karo ya 1-2 ghante baad try karo.")
     sys.exit()
+
+# Login karo
+cl = login_with_retry()
 
 user_id = cl.user_id_from_username(USERNAME)
 print(f"Fetching followers of @{USERNAME}...")
@@ -51,11 +69,11 @@ print(f"Found {len(fake_list)} fake accounts")
 print("\nStarting slow unfollow...")
 
 unfollowed = 0
-max_limit = 25   # Safe limit
+max_limit = 25
 
 for username in fake_list:
     if unfollowed >= max_limit:
-        print("Daily limit reached.")
+        print("Daily safe limit reached.")
         break
 
     try:
@@ -63,12 +81,10 @@ for username in fake_list:
         cl.user_unfollow(uid)
         unfollowed += 1
         print(f"✅ Unfollowed @{username} ({unfollowed}/{max_limit})")
-
-        delay = random.uniform(40, 65)
-        time.sleep(delay)
+        time.sleep(random.uniform(40, 70))
 
     except Exception as e:
         print(f"Error on @{username}: {e}")
-        time.sleep(25)
+        time.sleep(30)
 
 print(f"\n🎉 Done! Total unfollowed: {unfollowed}")
