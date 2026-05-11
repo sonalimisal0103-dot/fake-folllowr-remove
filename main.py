@@ -6,7 +6,7 @@ import os
 
 print("🔥 Instagram Login Tool (Forgot Password + 2FA Support)")
 
-USERNAME = "8793704813"
+USERNAME = "lagxd71@gmail.com"
 PASSWORD = "HARSHAD00"   # ← Yahan password daal do (agar yaad hai)
 
 proxies = [
