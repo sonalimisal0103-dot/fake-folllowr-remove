@@ -4,16 +4,16 @@ import random
 import sys
 import os
 
-print("🔥 Instagram Fake Followers Remover Tool (2FA Support)")
+print("🔥 Instagram Login Tool (Forgot Password + 2FA Support)")
 
 USERNAME = "theharsh_.01"
-PASSWORD = "HARSHAD00"   # ← Yahan apna password daal do
+PASSWORD = "HARSHAD00"   # ← Yahan password daal do (agar yaad hai)
 
 proxies = [
     "http://1351:IBd1Fk5CuUNZ@p101.squidproxies.com:9088",
 ]
 
-def login_with_2fa():
+def login_with_recovery():
     for attempt in range(3):
         print(f"\n🔄 Login Attempt {attempt+1}/3")
 
@@ -21,7 +21,6 @@ def login_with_2fa():
             os.remove("session.json")
 
         cl = Client()
-
         proxy = random.choice(proxies)
         cl.set_proxy(proxy)
         print(f"🌐 Using Proxy → {proxy[:40]}...")
@@ -33,37 +32,38 @@ def login_with_2fa():
             return cl
 
         except Exception as e:
-            error_str = str(e).lower()
-            if "two_factor" in error_str or "2fa" in error_str or "verification" in error_str:
-                print("🔐 2FA Code Required!")
-                code = input("Enter 2FA Code from Instagram: ").strip()
+            error = str(e).lower()
+            if "challenge" in error or "verification" in error or "2fa" in error or "code" in error:
+                print("🔐 Verification Code Required!")
+                code = input("Instagram se aaya code yahan daal: ").strip()
                 if code:
                     try:
                         cl.login(USERNAME, PASSWORD, verification_code=code)
                         cl.dump_settings("session.json")
-                        print("✅ 2FA Login Successful!")
+                        print("✅ 2FA / Recovery Code Login Successful!")
                         return cl
                     except Exception as e2:
-                        print(f"❌ 2FA Failed: {e2}")
+                        print(f"❌ Code Failed: {e2}")
                 else:
                     print("❌ Code nahi diya")
             else:
-                print(f"❌ Attempt Failed: {e}")
+                print(f"❌ Normal Login Failed: {e}")
 
             time.sleep(10)
 
-    print("❌ All attempts failed.")
+    print("❌ Sab attempts fail ho gaye.")
+    print("Forgot Password wala full flow Instagram app se karo.")
     sys.exit()
 
 # ==================== LOGIN ====================
-cl = login_with_2fa()
+cl = login_with_recovery()
 
-user_id = cl.user_id_from_username(USERNAME)
 print(f"\nFetching followers of @{USERNAME}...")
 
-followers = cl.user_followers(user_id, amount=0)
+followers = cl.user_followers(cl.user_id, amount=0)
 print(f"Total Followers: {len(followers)}")
 
+# Fake detection + unfollow code (pehle wala)
 fake_list = []
 
 for uid, user in followers.items():
@@ -80,26 +80,19 @@ for uid, user in followers.items():
 
 print(f"Found {len(fake_list)} fake accounts")
 
-# Slow Unfollow
-print("\nStarting slow unfollow...")
-
 unfollowed = 0
 max_limit = 25
 
 for username in fake_list:
     if unfollowed >= max_limit:
-        print("Daily safe limit reached.")
         break
-
     try:
         uid = cl.user_id_from_username(username)
         cl.user_unfollow(uid)
         unfollowed += 1
         print(f"✅ Unfollowed @{username} ({unfollowed}/{max_limit})")
         time.sleep(random.uniform(40, 70))
-
-    except Exception as e:
-        print(f"Error on @{username}: {e}")
-        time.sleep(25)
+    except:
+        time.sleep(20)
 
 print(f"\n🎉 Done! Total unfollowed: {unfollowed}")
