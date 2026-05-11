@@ -7,7 +7,7 @@ import os
 print("🔥 Instagram Login Tool - Email / Username Support")
 
 # Yahan email ya username daal sakte ho
-LOGIN_ID = "theharsh_.01"   # Ya email bhi daal sakte ho jaise "example@gmail.com"
+LOGIN_ID = "lagxd71@gmail.com"   # Ya email bhi daal sakte ho jaise "example@gmail.com"
 PASSWORD = "HARSHAD00"               # Password daal do
 
 # Proxy (optional)
